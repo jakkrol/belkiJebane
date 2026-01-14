@@ -69,8 +69,8 @@ free_dofs = np.setdiff1d(all_dofs, fixed_dofs)
 # --- REDUKCJA MACIERZY ---
 # Wycinamy z dużej macierzy tylko ten kawałek, który może się ruszać.
 # Używamy np.ix_ do bezpiecznego wycięcia wierszy i kolumn
-K_reduced = k_global[np.ix_(free_dofs, free_dofs)]
-F_reduced = F_vector[free_dofs]
+K_reduced = k_global[3:, 3:]
+F_reduced = F_vector[3:]
 
 U = np.linalg.solve(K_reduced, F_reduced)
 
@@ -103,15 +103,8 @@ size = nodes * dof_per_node
 U2 = np.zeros(size)
 U2[free_dofs] = U
 w_mes = U2[1::3] # Przemieszczenia pionowe co 3 indeks
-x = np.linspace(0, L_mm, nodes)
-
-plt.figure(figsize=(10, 6))
+x = np.linspace(1, L_mm, nodes)
+print(x)
+#plt.figure(figsize=(10, 6))
 plt.plot(x, w_mes, 'bo-', label='MES (jednostki mm, bez le)')
-#plt.plot(x, w_analityczne, 'r--', label='Teoria')
-plt.title(f'Ugięcie belki (obliczenia w mm)\nMax ugięcie: {w_mes[-1]:.3f} mm')
-plt.xlabel('x [mm]')
-plt.ylabel('w [mm]')
-plt.grid(True)
-plt.legend()
-plt.gca().invert_yaxis()
 plt.show()
