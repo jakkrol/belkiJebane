@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 L_mm = 2000.0       # Długość całkowita [mm] (np. l z tabeli)
 n_elem = 10         # Liczba elementów skończonych (np. z tabeli)
 
-E = 2*(10**11)            # Moduł Younga [Pa]
+E = 2*(10**11) / (10**6)   # Moduł Younga [Pa]
 
 b = 0.10 * 1000            # szerokość [mm]
 h = 0.15 * 1000            # wysokość [mm]
@@ -46,7 +46,7 @@ for i in range(n_elem):
 print(k_global)
 
 
-F_vector[31] = F   #Nie wiem dlaczego F, a nie -F jak na obrazku ale po porównaniu z analitycznym wychodzi dobrze
+F_vector[31] = -F   #Nie wiem dlaczego F, a nie -F jak na obrazku ale po porównaniu z analitycznym wychodzi dobrze
 print(F_vector)
 
 
@@ -59,52 +59,42 @@ print(F_vector)
 
 fixed_dofs = [0, 1, 2]
 
-# Tworzymy listę WSZYSTKICH indeksów
-all_dofs = np.arange(len(F_vector))
 
-# Wybieramy tylko te, które są WOLNE (nie są utwierdzone)
-# Funkcja setdiff1d usuwa z listy 'all_dofs' to, co jest w 'fixed_dofs'
-free_dofs = np.setdiff1d(all_dofs, fixed_dofs)
+#all_dofs = np.arange(len(F_vector))
+#free_dofs = np.setdiff1d(all_dofs, fixed_dofs)
 
-# --- REDUKCJA MACIERZY ---
-# Wycinamy z dużej macierzy tylko ten kawałek, który może się ruszać.
-# Używamy np.ix_ do bezpiecznego wycięcia wierszy i kolumn
 K_reduced = k_global[3:, 3:]
 F_reduced = F_vector[3:]
 
 U = np.linalg.solve(K_reduced, F_reduced)
 
-# U = np.linalg.solve(k_global, F_vector)
-# print(U)
-# Odtworzenie pełnego wektora przemieszczeń
-U_full = np.zeros(len(F_vector))
-U_full[free_dofs] = U
 
-# Wyciągnięcie przemieszczeń pionowych (w) dla każdego węzła
-# w znajduje się na indeksach: 1, 4, 7, ...
-displacements_w = U_full[1::3]
+#U_full = np.zeros(len(F_vector))
+#U_full[free_dofs] = U
 
+
+# displacements_w = U_full[1::3]
+displacements_w = U[1::3] 
 
 
 
 
 
 L = L_mm / 1000.0
-w_analytical_max = (F * L**3) / (3 * E * I)
-w_analytical_max_mm = w_analytical_max * 1000.0
-print("Analitycznie", w_analytical_max_mm)
+w_analytical_max = (-F * L_mm**3) / (3 * E * I)
+print("Analitycznie", w_analytical_max)
 
 print(f"Ugięcie MES na końcu: {displacements_w[-1]} mm")
-print(f"Ugięcie analityczne:  {w_analytical_max_mm} mm")
+print(f"Ugięcie analityczne:  {w_analytical_max} mm")
 
 
 
 size = nodes * dof_per_node
-U2 = np.zeros(size)
-U2[free_dofs] = U
-w_mes = U2[1::3] # Przemieszczenia pionowe co 3 indeks
-x = np.linspace(1, L_mm, nodes)
+#U2 = np.zeros(size)
+#U2[free_dofs] = U
+w_mes = U[1::3]
+x = np.linspace(0, L_mm, nodes)
 print(x)
 #plt.figure(figsize=(10, 6))
-plt.plot(x, w_mes, 'bo-', label='MES (jednostki mm, bez le)')
+plt.plot(x[1:], w_mes, 'bo-', label='w mm')
 plt.show()
