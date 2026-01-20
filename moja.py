@@ -1,4 +1,3 @@
-import matplotlib
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -62,7 +61,7 @@ F_reduced = F_vector[3:]
 U = np.linalg.solve(K_reduced, F_reduced)
 
 displacements_w = U[1::3]
-
+print("Displacements: ", displacements_w)
 
 
 w_analytical_max = (-F * L_mm**3) / (3 * E * I)

@@ -51,15 +51,15 @@ F_vector[(n_elem // 2) * 3 + 1] = -F
 print(F_vector)
 
 
-k_reduced = np.delete(k_global, [0,1,-3,-2], axis=0)
-k_reduced = np.delete(k_reduced, [0,1,-3,-2], axis=1)
-F_reduced = np.delete(F_vector, [0,1,-3,-2])
+k_reduced = np.delete(k_global, [0,1,-2], axis=0)
+k_reduced = np.delete(k_reduced, [0,1,-2], axis=1)
+F_reduced = np.delete(F_vector, [0,1,-2])
 
 U = np.linalg.solve(k_reduced, F_reduced)
 print(U)
 
 U = np.insert(U, 0, [0,0])
-U = np.insert(U, -1, [0,0])
+U = np.insert(U, -1, [0])
 
 x = np.linspace(0, L, nodes)
 
